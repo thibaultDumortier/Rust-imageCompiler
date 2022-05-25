@@ -1,9 +1,8 @@
 use image::io::Reader;
-use image::{open, GenericImageView, ImageBuffer, Rgba};
+use image::{open, DynamicImage, GenericImage};
 use std::error::Error;
 use std::ffi::OsStr;
 use std::fs::{self, create_dir};
-use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
 pub fn compile(dir: &Path) -> Result<(), Box<dyn Error>> {
@@ -24,7 +23,7 @@ pub fn compile(dir: &Path) -> Result<(), Box<dyn Error>> {
         }
     } else {
         //Compile images
-        let mut img = ImageBuffer::new(dim.0, dim.1);
+        let mut img = DynamicImage::new_rgba8(dim.0, dim.1);
         //Compile images from directory
         img = compile_dir(dir, img)?;
         // //Write image
@@ -60,16 +59,9 @@ fn get_img_dim(dir: &Path) -> (u32, u32) {
     dim
 }
 
-fn compile_dir<C>(
-    dir: &Path,
-    mut img: ImageBuffer<Rgba<u8>, C>,
-) -> Result<ImageBuffer<Rgba<u8>, C>, Box<dyn Error>>
-where
-    C: Deref<Target = [u8]> + DerefMut,
-{
+fn compile_dir(dir: &Path, mut img: DynamicImage) -> Result<DynamicImage, Box<dyn Error>> {
     assert!(dir.is_dir());
     let mut x = 0;
-    let mut y = 0;
     let paths = fs::read_dir(dir).unwrap();
 
     for path in paths {
@@ -79,14 +71,8 @@ where
             match ext {
                 "png" | "bmp" | "jpeg" | "jpg" => {
                     let read = Reader::open(path)?.decode()?;
-                    for i in 0..read.width() {
-                        for j in 0..read.height() {
-                            img.put_pixel(x, y, read.get_pixel(i, j));
-                            y += 1;
-                        }
-                        y -= read.height();
-                        x += 1;
-                    }
+                    img.copy_from(&read, x, 0)?;
+                    x += read.width();
                 }
                 _ => (),
             }
@@ -99,10 +85,7 @@ where
 }
 
 //Writes image to "compiledImages"
-fn image_writer<C>(img: ImageBuffer<Rgba<u8>, C>, name: String) -> Result<(), Box<dyn Error>>
-where
-    C: Deref<Target = [u8]> + DerefMut,
-{
+fn image_writer(img: DynamicImage, name: String) -> Result<(), Box<dyn Error>> {
     if !Path::new("./compiledImages").exists() {
         create_dir(Path::new("./compiledImages"))?;
     }
