@@ -2,12 +2,13 @@ use image::io::Reader;
 use image::{open, GenericImageView, ImageBuffer, Rgba};
 use std::error::Error;
 use std::ffi::OsStr;
-use std::fs::{self, create_dir, remove_file};
+use std::fs::{self, create_dir};
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
 pub fn compile(dir: &Path) -> Result<(), Box<dyn Error>> {
     assert!(dir.is_dir());
+
     println!("now compiling: {}", dir.display());
 
     let dim = get_img_dim(dir);
@@ -45,7 +46,7 @@ fn get_img_dim(dir: &Path) -> (u32, u32) {
             let ext = path.extension().and_then(OsStr::to_str).unwrap();
             match ext {
                 "png" | "bmp" | "jpeg" | "jpg" => {
-                    let img = open(path).unwrap().into_rgba8();
+                    let img = open(path).unwrap();
                     if img.height() > dim.1 {
                         dim.1 = img.height();
                     }
@@ -80,8 +81,7 @@ where
                     let read = Reader::open(path)?.decode()?;
                     for i in 0..read.width() {
                         for j in 0..read.height() {
-                            let pix = read.get_pixel(i, j);
-                            img.put_pixel(x, y, pix);
+                            img.put_pixel(x, y, read.get_pixel(i, j));
                             y += 1;
                         }
                         y -= read.height();
@@ -99,20 +99,12 @@ where
 }
 
 //Writes image to "compiledImages"
-// private void imageWriter(BufferedImage imageBuffer, String name){
 fn image_writer<C>(img: ImageBuffer<Rgba<u8>, C>, name: String) -> Result<(), Box<dyn Error>>
 where
     C: Deref<Target = [u8]> + DerefMut,
 {
-    if Path::new("./compiledImages").exists() == false {
+    if !Path::new("./compiledImages").exists() {
         create_dir(Path::new("./compiledImages"))?;
-    } else {
-        let paths = fs::read_dir(Path::new("./compiledImages")).unwrap();
-
-        for path in paths {
-            let path = path.unwrap().path();
-            remove_file(path)?;
-        }
     }
 
     img.save(format!("./compiledImages/{}.png", name))?;
