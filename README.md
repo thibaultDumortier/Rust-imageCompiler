@@ -3,7 +3,7 @@
 ## Description
 
 As you may guess this is a small image compiler fully made with using the Rust programming language. 
-It seems faster than its java counterpart (benchmark incoming).
+It is slower than its java counter part, on average the rust version takes around 1min20s, while java takes around 13seconds.
 
 ## How to use
 
