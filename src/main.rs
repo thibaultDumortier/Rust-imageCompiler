@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let start = Instant::now();
     compile(Path::new("YOUR PATH HERE"))?;
     let elapsed = start.elapsed();
-    println!("Millis: {} ms", elapsed.as_millis());
+    println!("Program took: {} ms", elapsed.as_millis());
 
     Ok(())
 }
