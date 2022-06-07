@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let start = Instant::now();
-    compile(Path::new("YOUR PATH HERE"))?;
+    compile(Path::new("to_compile/"))?; //Change path then run "cargo run --release"
     let elapsed = start.elapsed();
     println!("Program took: {} ms", elapsed.as_millis());
 
