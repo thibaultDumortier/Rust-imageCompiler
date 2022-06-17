@@ -7,7 +7,7 @@ It is faster than its java counterpart taking around 8sec, while java takes arou
 
 ## How to use
 
-Put a directory or the files you want compiled in the "to_compile" folder.</br>
+Put a directory or the files you want compiled in a "to_compile" folder at the same level as src.</br>
 If you don't want to use the "to_compile" directory you can instead change the path in main (see comments)</br>
 Then run `./target/release/rust_ic` this will simply run the program without having to compile it again.
 
