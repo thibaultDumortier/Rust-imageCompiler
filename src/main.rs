@@ -2,7 +2,7 @@ use std::fs::{self, remove_file};
 use std::time::Instant;
 use std::{error::Error, path::Path};
 
-use rust_ic::{compile, Decompiler, SquareDecompiler};
+use rust_ic::compile;
 
 fn main() -> Result<(), Box<dyn Error>> {
     clear()?;
