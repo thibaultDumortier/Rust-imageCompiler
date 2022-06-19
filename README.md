@@ -4,6 +4,8 @@
 
 As you may guess this is a small image compiler fully made using the Rust programming language. 
 It is faster than its java counterpart taking around 8sec, while java takes around 13sec [java still needs to be optimised on some aspects].
+The compiler also includes a filter which you can modify, by adding different directory names so that they are not read.
+The decompiler can now be coded with a simple trait.
 
 ## How to use
 
@@ -14,8 +16,6 @@ Then run `./target/release/rust_ic` this will simply run the program without hav
 ## Future ideas
 
 - Make it so that a user can simply use a egui GUI to select a directory to compile.
-- Add a filterable compiler, that way one can simply get the compiled images they want.
-- Add a decompiler with user given instructions using a rust trait
 
 ## How it works
 
