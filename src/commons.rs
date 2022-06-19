@@ -5,10 +5,7 @@ use image::DynamicImage;
 pub fn check_if_image(path: &Path) -> bool {
     if path.is_file() {
         let ext = path.extension().and_then(OsStr::to_str).unwrap();
-        match ext {
-            "png" | "bmp" | "jpeg" | "jpg" => true,
-            _ => false,
-        }
+        matches!(ext, "png" | "bmp" | "jpeg" | "jpg")
     } else {
         false
     }

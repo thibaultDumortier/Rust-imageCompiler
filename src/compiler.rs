@@ -86,9 +86,7 @@ fn compile_dir(
             img.copy_from(&read, x, 0)?;
             x += read.width();
         } else if path.is_dir() {
-            if !check_if_image(&path) {
-                compile(&path, filter)?;
-            }
+            compile(&path, filter)?;
         }
     }
 
