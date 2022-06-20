@@ -1,5 +1,6 @@
 use image::io::Reader;
 use image::{open, DynamicImage, GenericImage};
+use regex::Regex;
 use std::error::Error;
 use std::fs::{self, create_dir};
 use std::path::Path;
@@ -7,7 +8,6 @@ use std::path::Path;
 use crate::{check_if_image, image_writer};
 
 pub fn compile(dir: &Path, filter: &Option<Vec<String>>) -> Result<(), Box<dyn Error>> {
-    println!("{}", dir.display());
     assert!(dir.is_dir());
     if let Some(filt) = filter {
         if filt.contains(&dir.file_name().unwrap().to_str().unwrap().to_string()) {
@@ -38,19 +38,27 @@ pub fn compile(dir: &Path, filter: &Option<Vec<String>>) -> Result<(), Box<dyn E
             create_dir(Path::new("./compiledImages"))?;
         }
 
-        image_writer(
-            img,
-            format!(
-                "./compiledImages/{}.png",
-                dir.file_name().unwrap().to_str().unwrap().to_owned()
-            ),
-        )?;
+        let paths = fs::read_dir("./compiledImages").unwrap();
+        let mut counter = 0;
+        for path in paths {
+            let path = path.unwrap().path();
+            let path = path.file_stem().unwrap().to_str().unwrap().to_string();
+            let pattern = Regex::new(
+                format!("^{}\\d?$", dir.file_name().unwrap().to_str().unwrap()).as_str(),
+            )
+            .unwrap();
+
+            if pattern.is_match(&path) {
+                counter += 1;
+            }
+        }
+        write(counter, img, dir)?;
     }
 
     Ok(())
 }
 
-fn get_img_dim(dir: &Path) -> (u32, u32) {
+pub fn get_img_dim(dir: &Path) -> (u32, u32) {
     assert!(dir.is_dir());
     let mut dim = (0, 0);
 
@@ -91,4 +99,26 @@ fn compile_dir(
     }
 
     Ok(img)
+}
+
+fn write(counter: i32, img: DynamicImage, dir: &Path) -> Result<(), Box<dyn Error>> {
+    if counter == 0 {
+        image_writer(
+            img,
+            format!(
+                "./compiledImages/{}.png",
+                dir.file_name().unwrap().to_str().unwrap().to_owned()
+            ),
+        )?;
+    } else {
+        image_writer(
+            img,
+            format!(
+                "./compiledImages/{}{}.png",
+                dir.file_name().unwrap().to_str().unwrap().to_owned(),
+                counter
+            ),
+        )?;
+    }
+    Ok(())
 }

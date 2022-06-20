@@ -2,17 +2,22 @@ use std::fs::{self, remove_file};
 use std::time::Instant;
 use std::{error::Error, path::Path};
 
-use rust_ic::compile;
+use rust_ic::{compile, Decompiler, DirDecompiler};
 
 fn main() -> Result<(), Box<dyn Error>> {
     clear()?;
 
-    let start = Instant::now();
-    compile(Path::new("to_compile/"), &None)?; //Change path then run "cargo run --release"
-    let elapsed = start.elapsed();
-    println!("Program took: {} ms", elapsed.as_millis());
+    // let start = Instant::now();
+    // compile(
+    //     Path::new("to_compile/"),
+    //     &Some(vec!["optifine".to_string()]),
+    // )?; //Change path then run "cargo run --release"
+    // let elapsed = start.elapsed();
+    // println!("Program took: {} ms", elapsed.as_millis());
 
-    //You can add a decompiler here if you so wish
+    // //You can add a decompiler here if you so wish
+    // let decomp = DirDecompiler::new();
+    // decomp.decompile(Path::new("to_compile/"))?;
 
     Ok(())
 }
